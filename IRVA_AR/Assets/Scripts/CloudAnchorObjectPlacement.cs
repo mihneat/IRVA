@@ -11,7 +11,7 @@ public class CloudAnchorObjectPlacement : MonoBehaviour
     /// <summary>
     /// The object instantiated as a result of a successful raycast intersection with a plane.
     /// </summary>
-    public GameObject spawnedObject { get; private set; }
+    public List<GameObject> spawnedObjects { get; private set; }
 
     /// <summary>
     /// The first-person camera being used to render the passthrough camera image (i.e. AR
@@ -38,7 +38,7 @@ public class CloudAnchorObjectPlacement : MonoBehaviour
         }
 
         m_RaycastManager = GetComponent<ARRaycastManager>();
-        spawnedObject = null;
+        spawnedObjects = new List<GameObject>();
     }
 
     bool TryGetTouchPosition(out Vector2 touchPosition)
@@ -69,10 +69,6 @@ public class CloudAnchorObjectPlacement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        /* Add only one cube on scene */
-        if (spawnedObject != null)
-            return;
-
         if (!TryGetTouchPosition(out Vector2 touchPosition))
             return;
 
@@ -81,11 +77,13 @@ public class CloudAnchorObjectPlacement : MonoBehaviour
             var hitPose = s_Hits[0].pose;
 
             /* TODO 2.1. Instantiate a new prefab on scene */
-            spawnedObject = new GameObject();
+            var spawnedObject = Instantiate(prefab, hitPose.position, hitPose.rotation);
 
             /* TODO 2.2 Attach an anchor to the prefab */
-            ARAnchor anchor = new ARAnchor();
+            ARAnchor anchor = spawnedObject.AddComponent<ARAnchor>();
             spawnedObject.transform.parent = anchor.transform;
+            
+            spawnedObjects.Add(spawnedObject);
 
             /* Send the anchor to ARCloudAnchorManager */
             ARCloudAnchorManager.Instance.QueueAnchor(anchor);
@@ -95,14 +93,19 @@ public class CloudAnchorObjectPlacement : MonoBehaviour
     /* Add the object on scene after the anchor has been resolved */
     public void RecreatePlacement(Transform transform)
     {
-        spawnedObject = Instantiate(prefab, transform.position, transform.rotation);
-        spawnedObject.transform.parent = transform;
+        var obj = Instantiate(prefab, transform.position, transform.rotation);
+        obj.transform.parent = transform;
     }
 
     public void RemovePlacement()
     {
         /* TODO 4 Remove the cube from screen */
+        spawnedObjects.ForEach(spawnedObject =>
+        {
+            Destroy(spawnedObject);
+        });
 
+        spawnedObjects = new List<GameObject>();
     }
 
     static List<ARRaycastHit> s_Hits = new List<ARRaycastHit>();

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
@@ -98,7 +99,7 @@ public class MeasureDistances : MonoBehaviour
         for (int i = 0; i < distances.Count; i++)
         {
             /* TODO 2.3 Update text position - SOLVE THIS AFTER TESTING 2.1 - 2.2 AND NOTICE THE DIFFERENCES */
-            //distances[i].transform.position = new Vector3(0.0f, 0.0f, 0.0f);
+            distances[i].transform.position = Camera.main.WorldToScreenPoint((points[i].transform.position + points[i + 1].transform.position) / 2.0f);
         }
 
         if (!TryGetTouchPosition(out Vector2 touchPosition))
@@ -120,23 +121,22 @@ public class MeasureDistances : MonoBehaviour
             {
                 /* Draw a line between the last two added points */
                 /* TODO 1.1 Instantiate linePrefab */
-                GameObject line = new GameObject();
+                GameObject line = Instantiate(linePrefab);
                 /* TODO 1.2 Set position at half the distance between the last two added points */
-                line.transform.position = new Vector3(points[points.Count - 1].transform.position.x
-                    + (points[points.Count - 2].transform.position.x
-                    - points[points.Count - 1].transform.position.x) / 2,
-                    0, 0);
+                line.transform.position = (points[^1].transform.position + points[^2].transform.position) / 2.0f;
                 /* TODO 1.3 Set rotation: use LookAt function to make the line oriented between the two points */
-                
+                line.transform.LookAt(points[^1].transform.position);
 
-                /* TODO 1.4 Set scale: two fixed numbers on ox and oy axis, the distance between the two points on oz axis */
-                line.transform.localScale = new Vector3(0.5f, 0.5f, 0.0f); /* !0.5 can be changed to whatever value we want
-                                                                            * !In order to correctly, set the oz axis pay attention
-                                                                            * to the structure of the used prefab
-                                                                            */
+                /* TODO 1.4 Set scale: two fixed numbers on Ox and Oy axis, the distance between the two points on oz axis */
+                /* !0.5 can be changed to whatever value we want
+                 * !In order to correctly, set the oz axis pay attention
+                 * to the structure of the used prefab
+                 */
+                
+                line.transform.localScale = new Vector3(0.5f, 0.5f, Vector3.Distance(points[^1].transform.position, points[^2].transform.position) / 0.05f);
 
                 /* TODO 1.5 Add an anchor to the line - SOLVE THIS AFTER TESTING 1.1 - 1.4 AND NOTICE THE DIFFERENCES */
-
+                line.AddComponent<ARAnchor>();
 
                 /* Show on each line the distance */
                 /* Instantiate textPrefab */
@@ -147,14 +147,15 @@ public class MeasureDistances : MonoBehaviour
                 partialDistance.transform.position = Camera.main.WorldToScreenPoint(new Vector3(line.transform.position.x,
                     line.transform.position.y, line.transform.position.z));
                 /* TODO 2.1 Compute the distance between the last two added points */
-                float distance = 0;
+                float distance = Vector3.Distance(points[^1].transform.position, points[^2].transform.position);
+                
                 /* TODO 2.2 Add the distance to our distances list */
-                partialDistance.text = "";
+                partialDistance.text = distance.ToString(CultureInfo.InvariantCulture);
                 distances.Add(partialDistance);
 
                 /* TODO 3 Update the total distance */
-                distanceSum = 0;
-                totalDistance.text = "Total distance: ";
+                distanceSum += distance;
+                totalDistance.text = $"Total distance: {distanceSum}";
             }
         }
     }

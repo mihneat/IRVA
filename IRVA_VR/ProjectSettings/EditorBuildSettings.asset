@@ -4,5 +4,20 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
-  m_configObjects: {}
+  m_Scenes:
+  - enabled: 0
+    path: Assets/Samples/Google Cardboard XR Plugin for Unity/1.26.0/Hello Cardboard/Scenes/HelloCardboard.unity
+    guid: 03c48c5e809944fa4afcae9973709f26
+  - enabled: 0
+    path: Assets/L1_VR_GoogleCardboard/Scenes/L1_VR_GoogleCardboard_BalloonPopper.unity
+    guid: dc2b59be1a27f594ea1b880cd89069e4
+  - enabled: 0
+    path: "Assets/Samples/Meta XR Interaction \u200BSDK/69.0.2/Example Scenes/ComprehensiveRigExample.unity"
+    guid: 2efe93cb8972cae439bfba2dcd4165f0
+  - enabled: 1
+    path: Assets/L4_VR_MetaXR_Basics/Scenes/L4_VR_MetaXR_Basics.unity
+    guid: 4962c77aafb52214e9b9d5093e26ca3b
+  m_configObjects:
+    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 4e423f378d4abb845b0d56e72dd34cd8, type: 2}
+    Unity.XR.OpenVR.Settings: {fileID: 11400000, guid: ae9c2a7c26a022e4690ec51110a694f4, type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: eb0fa3be43ecf474099d0c80e67e2a15, type: 2}

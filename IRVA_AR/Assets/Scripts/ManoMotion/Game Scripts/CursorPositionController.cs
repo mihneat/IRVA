@@ -3,7 +3,7 @@ using UnityEngine;
 namespace AR_ManoMotion
 {
     /* TODO 1.1. Test the ManoMotion demo scene from Manomotion AR Foundation -> Scenes -> ManoMotionSDKProFeatures */
-    /* TODO 1.2. Buid the Fruit Ninja scene */
+    /* TODO 1.2. Build the Fruit Ninja scene */
     public class CursorPositionController : MonoBehaviour
     {
         [Tooltip("Object which will follow the cursor (mouse on desktop or hand position in AR")]
@@ -37,10 +37,12 @@ namespace AR_ManoMotion
                  *    (!) NOTE:
                  *        -> Palm center is returned in normalized coordinates [0...1], 
                  *        -> 'cursorScreenPos' needs to be in screen coordinates (pixels)
-                 *        -> Use screen.width & Screen.height to compute position in pixels
+                 *        -> Use Screen.width & Screen.height to compute position in pixels
                  *        -> Z coord can be set to 0
                  */
-
+                
+                Vector3 handInfo = ManomotionManager.Instance.Hand_infos[0].hand_info.tracking_info.palm_center;
+                _cursorScreenPos = new Vector3(handInfo.x * Screen.width, handInfo.y * Screen.height, 0);
             }
 
             UpdateCursorPosition(_cursorScreenPos);

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.XR.ARFoundation;
@@ -17,8 +18,8 @@ public class ARCloudAnchorManager : MonoBehaviour
     TMP_Text statusUpdate;
 
     private ARAnchorManager  arAnchorManager = null;
-    private ARAnchor pendingHostAnchor = null;
-    private string anchorIdToResolve;
+    private List<ARAnchor> pendingHostAnchors = new();
+    private List<string> anchorIdsToResolve;
     private AnchorCreatedEvent anchorCreatedEvent = null;
     public static ARCloudAnchorManager Instance { get; private set; }
     public GameObject middle;
@@ -44,7 +45,7 @@ public class ARCloudAnchorManager : MonoBehaviour
     }
     public void QueueAnchor(ARAnchor arAnchor)
     {
-        pendingHostAnchor = arAnchor;
+        pendingHostAnchors.Add(arAnchor);
     }
 
     public IEnumerator DisplayStatus(string text)
@@ -57,16 +58,20 @@ public class ARCloudAnchorManager : MonoBehaviour
     public void HostAnchor()
     {
         /* TODO 3.1 Get FeatureMapQuality */
-        FeatureMapQuality quality = new FeatureMapQuality();
+        FeatureMapQuality quality = arAnchorManager.EstimateFeatureMapQualityForHosting(GetCameraPose());
         StartCoroutine(DisplayStatus("HostAnchor call in progress. Feature Map Quality: " + quality));
 
         if (quality != FeatureMapQuality.Insufficient)
         {
             /* TODO 3.2 Start the hosting process */
-            HostCloudAnchorPromise cloudAnchor;
+            anchorIdsToResolve = new List<string>();
+            new List<ARAnchor>(pendingHostAnchors).ForEach(pendingHostAnchor =>
+            {
+                HostCloudAnchorPromise cloudAnchor = arAnchorManager.HostCloudAnchorAsync(pendingHostAnchor, 365);
 
-            /* Wait for the promise to solve (Hint! Pass the HostCloudAnchorPromise variable to the coroutine) */
-            StartCoroutine(WaitHostingResult());
+                /* Wait for the promise to solve (Hint! Pass the HostCloudAnchorPromise variable to the coroutine) */
+                StartCoroutine(WaitHostingResult(pendingHostAnchor, cloudAnchor));
+            });
         }
     }
 
@@ -75,13 +80,41 @@ public class ARCloudAnchorManager : MonoBehaviour
         StartCoroutine(DisplayStatus("Resolve call in progress"));
 
         /* TODO 5 Start the resolve process and wait for the promise */
+        new List<string>(anchorIdsToResolve).ForEach(anchorIdToResolve =>
+        {
+            ResolveCloudAnchorPromise resolvePromise = arAnchorManager.ResolveCloudAnchorAsync(anchorIdToResolve);
+
+            StartCoroutine(WaitResolvingResult(resolvePromise));
+        });
 
     }
-
-    private IEnumerator WaitHostingResult()
+    
+    /* TODO 3.3 Wait for the promise. Save the id if the hosting succeeded */
+    private IEnumerator WaitHostingResult(ARAnchor pendingAnchor, HostCloudAnchorPromise hostingPromise)
     {
-        /* TODO 3.3 Wait for the promise. Save the id if the hosting succeeded */
-        yield return new WaitForSeconds(1.0f);
+        /* Wait for the promise. Save the id if the hosting succeeded */
+        yield return hostingPromise;
+ 
+        if (hostingPromise.State == PromiseState.Cancelled)
+        {
+            yield break;
+        }
+ 
+        var result = hostingPromise.Result;
+ 
+        if (result.CloudAnchorState == CloudAnchorState.Success)
+        {
+            anchorIdsToResolve.Add(result.CloudAnchorId);
+            
+            // Remove the corresponding pending one
+            pendingHostAnchors.Remove(pendingAnchor);
+            
+            Debug.Log("Anchor hosted successfully!");
+        }
+        else
+        {
+            Debug.Log(string.Format("Error in hosting the anchor: {0}", result.CloudAnchorState));
+        }
     }
 
     private IEnumerator WaitResolvingResult(ResolveCloudAnchorPromise resolvePromise)

@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79a1434fa36b71f468fbec1c0a4f6f71, type: 3}
   m_Name: XRPluginProviderControllerData
   m_EditorClassIdentifier: 
-  <TargetVR>k__BackingField: 0
+  <TargetVR>k__BackingField: 3

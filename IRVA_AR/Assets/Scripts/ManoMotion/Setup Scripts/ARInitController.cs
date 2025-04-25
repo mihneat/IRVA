@@ -60,6 +60,8 @@ namespace AR_ManoMotion
         private Vector3 _currentScale = Vector3.one;
         private Quaternion _currentRot = Quaternion.identity;
 
+        public event Action OnGameStarted;
+
         private void Awake() => InitDeviceMode();
 
         void Start()
@@ -175,6 +177,8 @@ namespace AR_ManoMotion
                 _arSceneInst.GetComponent<CursorPositionController>().enabled = true;
                 _arSceneInst.GetComponent<HandGestureController>().enabled = true;
                 _arSceneInst.GetComponentInChildren<FruitSpawner>().enabled = true;
+
+                OnGameStarted?.Invoke();
             }
         }
 

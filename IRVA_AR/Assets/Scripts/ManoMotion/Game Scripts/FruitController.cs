@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace AR_ManoMotion
@@ -13,6 +14,8 @@ namespace AR_ManoMotion
         [Tooltip("Sound effect played after cursor-fruit contact")]
         [SerializeField] private AudioClip hitSoundClip;
 
+        public event Action OnPlayerCut;
+        
         void Update()
         {
             /* Destroy if y-coord is under some value. It works because fruits' parent is 'GameScene' */
@@ -22,9 +25,15 @@ namespace AR_ManoMotion
             }
         }
 
-        private void OnCollisionEnter(Collision collision) => DestroyFruitInstance();
+        private void OnCollisionEnter(Collision collision)
+        {
+            if (!collision.transform.CompareTag("enemy"))
+                return;
+            
+            DestroyFruitInstance(true);
+        }
 
-        public void DestroyFruitInstance()
+        public void DestroyFruitInstance(bool isCutByPlayer = false)
         {
             /* Instantiate the particle effect:
              *    -> The effect is automatically played (see 'Play On Awake' property on particle in Inspector)
@@ -37,6 +46,9 @@ namespace AR_ManoMotion
              */
             AudioSource.PlayClipAtPoint(hitSoundClip, transform.position);
 
+            if (isCutByPlayer)
+                OnPlayerCut?.Invoke();
+            
             Destroy(gameObject);
         }
     }

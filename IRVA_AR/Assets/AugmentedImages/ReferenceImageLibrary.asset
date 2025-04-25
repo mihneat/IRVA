@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 848409ee8ba454f42a5ddff137688a27, type: 3}
+  m_Name: ReferenceImageLibrary
+  m_EditorClassIdentifier: 
+  m_GuidLow: 5047908718388382352
+  m_GuidHigh: 17697101837719297962
+  m_DataStore:
+    m_Storage: []
+  m_Images:
+  - m_SerializedGuid:
+      m_GuidLow: 4614839139945913682
+      m_GuidHigh: 11486160570770104739
+    m_SerializedTextureGuid:
+      m_GuidLow: 5090442623131643100
+      m_GuidHigh: 2441771811639889838
+    m_Size: {x: 0, y: 0}
+    m_SpecifySize: 0
+    m_Name: Godfrey
+    m_Texture: {fileID: 0}
+  - m_SerializedGuid:
+      m_GuidLow: 5221799596693051853
+      m_GuidHigh: 14698731589788900014
+    m_SerializedTextureGuid:
+      m_GuidLow: 16079225099999647626
+      m_GuidHigh: 7670907080226498842
+    m_Size: {x: 0, y: 0}
+    m_SpecifySize: 0
+    m_Name: Bracken
+    m_Texture: {fileID: 0}
+  - m_SerializedGuid:
+      m_GuidLow: 5564734917294164309
+      m_GuidHigh: 2649161779651176632
+    m_SerializedTextureGuid:
+      m_GuidLow: 9800988958918586981
+      m_GuidHigh: 326937870956898281
+    m_Size: {x: 0, y: 0}
+    m_SpecifySize: 0
+    m_Name: Creeper
+    m_Texture: {fileID: 0}

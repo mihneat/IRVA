@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace AR_ManoMotion
 {
@@ -29,6 +31,8 @@ namespace AR_ManoMotion
         private bool _spawnerActive = true;
         private float _spawnMultiplier = 1f;
 
+        public event Action<FruitController> OnFruitSpawned;
+
         /* TODO 4.4 Use this to control spawn rate
          *    -> You need to figure out where to use it, changing it's value will not do anything as it is not used in code
          *    -> Hint: Study the spawn coroutine
@@ -55,7 +59,7 @@ namespace AR_ManoMotion
         {
             for (; ; )
             {
-                if (true) /* TODO 3.6 */
+                if (SpawnerActive) /* TODO 3.6 */
                 {
                     /* Get random values */
                     int randFruitIndex = Random.Range(0, fruitPrefabs.Count);
@@ -74,9 +78,10 @@ namespace AR_ManoMotion
                     newFruit.GetComponent<Rigidbody>().AddForce(new Vector3(randSpawnForceDeviationX, randSpawnForceY, 0), ForceMode.VelocityChange);
                     newFruit.GetComponent<Rigidbody>().AddRelativeTorque(randAngularForce, ForceMode.VelocityChange);
 
+                    OnFruitSpawned?.Invoke(newFruit.GetComponent<FruitController>());
                 }
 
-                float randSpawnTimer = Random.Range(MinSpawnRate, MaxSpawnRate); /* TODO 4.6 */
+                float randSpawnTimer = Random.Range(MinSpawnRate, MaxSpawnRate) / SpawnMultiplier; /* TODO 4.6 */
 
                 /* Wait until next spawn */
                 yield return new WaitForSeconds(randSpawnTimer);
